@@ -1,0 +1,34 @@
+spring:
+  profiles.active: prod
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/portfolioChat
+    username: portfolio
+    password: 1234
+logging:
+  level:
+    org.springframework: info
+    com: debug
+    org.hibernate.SQL: debug
+---
+
+spring:
+  profiles: dev
+server:
+  url: http://localhost:3000/
+  
+---
+spring:
+  profiles: prod
+server:
+  url: https://idontchop.com/portfolio
