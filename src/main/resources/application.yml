@@ -10,7 +10,7 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL5Dialect
+        dialect: org.hibernate.dialect.MySQL55Dialect 
   datasource:
     url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/portfolioChat
     username: portfolio
