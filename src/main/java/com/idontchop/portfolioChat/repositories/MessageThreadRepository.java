@@ -11,6 +11,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import com.idontchop.portfolioChat.model.MessageThread;
 
+/**
+ * See MessageRepository.
+ * 
+ * @author nathan
+ *
+ */
 public interface MessageThreadRepository extends CrudRepository<com.idontchop.portfolioChat.model.MessageThread, Long> {
 
 	@Override

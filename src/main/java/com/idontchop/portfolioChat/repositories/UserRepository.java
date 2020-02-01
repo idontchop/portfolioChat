@@ -1,13 +1,22 @@
 package com.idontchop.portfolioChat.repositories;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 
 import com.idontchop.portfolioChat.model.User;
 
-@RestResource (exported = false)
+/**
+ * No endpoints for users are exposed. Should be handled entirely by
+ * spring security and auth server.
+ * 
+ * @author nathan
+ *
+ */
+@RepositoryRestResource (exported = false)
 public interface UserRepository extends CrudRepository<User, Long> {
 
 	@Override
