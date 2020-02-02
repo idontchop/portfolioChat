@@ -2,6 +2,7 @@ package com.idontchop.portfolioChat.model;
 
 import java.util.Collection;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -21,7 +22,7 @@ public class User {
 	
 	private String name;
 	
-    @OneToMany(mappedBy = "members", orphanRemoval = true)
+    @ManyToMany(mappedBy = "members", cascade = CascadeType.ALL)
     private Collection<MessageThread> messageThreads;
 	
 	public User () {

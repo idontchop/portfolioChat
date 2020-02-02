@@ -1,6 +1,8 @@
 package com.idontchop.portfolioChat.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -20,12 +22,14 @@ public class MessageThread {
 	@GeneratedValue ( strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@OneToMany ( fetch = FetchType.EAGER )
+	@ManyToMany ( fetch = FetchType.EAGER )
 	@Size( min=1 , max=10 )
 	private List<User> members;
 	
     @OneToMany(mappedBy = "messageThread", orphanRemoval = true)
     private Collection<Message> messages;
+    
+    private Date created = new Date();
 
 	public MessageThread () {
 		
@@ -33,6 +37,20 @@ public class MessageThread {
 	
 	public long getId() {
 		return id;
+	}
+	
+	/**
+	 * Returns arraylist of longs corresponding to 
+	 * members.
+	 * 
+	 * @return
+	 */
+	public List<Long> getMemberIds() {
+		
+		List<Long> ml = new ArrayList<>();
+		members.forEach( m -> ml.add(m.getId()));
+		
+		return ml;
 	}
 
 	public void setId(long id) {
@@ -49,6 +67,14 @@ public class MessageThread {
 
 	public void setMembers(List<User> members) {
 		this.members = members;
+	}
+
+	public Date getCreated() {
+		return created;
+	}
+
+	public void setCreated(Date created) {
+		this.created = created;
 	}
 
 

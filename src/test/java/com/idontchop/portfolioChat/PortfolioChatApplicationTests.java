@@ -2,6 +2,7 @@ package com.idontchop.portfolioChat;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,9 +16,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.idontchop.portfolioChat.model.Message;
+import com.idontchop.portfolioChat.model.MessageThread;
 import com.idontchop.portfolioChat.model.User;
 import com.idontchop.portfolioChat.repositories.MessageRepository;
+import com.idontchop.portfolioChat.repositories.MessageThreadRepository;
 import com.idontchop.portfolioChat.repositories.UserRepository;
+import com.idontchop.portfolioChat.service.MessageService;
 
 @SpringBootTest
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -30,8 +34,36 @@ class PortfolioChatApplicationTests {
 	@Autowired
 	private UserRepository uRepo;
 	
+	@Autowired
+	private MessageThreadRepository mtRepo;
+	
+	@Autowired
+	MessageService ms;
+	
 	@Test
 	void contextLoads() {
+	}
+	
+	@Test
+	@WithMockUser(value = "20") 
+	void addTests() throws IOException {
+		
+		List<Long> ll = new ArrayList<>();
+		ll.add(11L);
+		ll.add(12L);
+		
+		//User u = ms.addUser("21");
+		//assertTrue ( u != null );
+
+		MessageThread mt = ms.addThread(ll);
+		assertTrue ( mt != null);
+		
+		ms.addMessage("New Message 1", mt.getId(), 11L);
+		
+		mtRepo.deleteById(4L);
+		mtRepo.deleteById(5L);
+		mtRepo.deleteById(6L);
+		mtRepo.deleteById(7L);
 	}
 	
 	
@@ -40,6 +72,7 @@ class PortfolioChatApplicationTests {
 	@WithMockUser(value = "17")
 	void findTests () {
 		
+		/*
 		Iterable<Message> l = mRepo.findAllByMessageThread_id(1);
 		
 		assertTrue ( l.iterator().hasNext() );
@@ -51,7 +84,7 @@ class PortfolioChatApplicationTests {
 		lList.add(1L); lList.add(2L);
 		
 		assertTrue ( mRepo.findAllById( lList ).iterator().hasNext() );
-		
+		*/
 	}
 
 
@@ -59,6 +92,7 @@ class PortfolioChatApplicationTests {
 	@WithMockUser ( value = "17" )
 	void messageRepoTests () {
 		
+		/*
 		Optional<Message> m = mRepo.findById(1L);
 		
 		assertTrue ( m.isPresent() );
@@ -66,7 +100,7 @@ class PortfolioChatApplicationTests {
 		m = mRepo.findById(2L);
 		
 		assertTrue ( m.isEmpty() );
-		
+		*/
 	}
 	
 	

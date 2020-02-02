@@ -12,7 +12,7 @@ import javax.persistence.OneToMany;
 @Entity
 public class Message {
 	
-	public enum MessageType {
+	public enum MesType {
 		MESSAGE,
 		IMAGE,
 		JOIN,
@@ -29,7 +29,7 @@ public class Message {
 	@ManyToOne
 	private User sender;
 	
-	private MessageType type;
+	private MesType type = MesType.MESSAGE;
 	
 	private String content;
 	
@@ -77,11 +77,11 @@ public class Message {
 		this.id = id;
 	}
 
-	public MessageType getType() {
+	public MesType getType() {
 		return type;
 	}
 
-	public void setType(MessageType type) {
+	public void setType(MesType type) {
 		this.type = type;
 	}
 

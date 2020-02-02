@@ -3,9 +3,12 @@ package com.idontchop.portfolioChat.service;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import com.idontchop.portfolioChat.model.Message;
 import com.idontchop.portfolioChat.model.MessageThread;
 import com.idontchop.portfolioChat.model.User;
 import com.idontchop.portfolioChat.repositories.MessageRepository;
@@ -23,6 +26,7 @@ import com.idontchop.portfolioChat.repositories.UserRepository;
  * @author nathan
  *
  */
+@Service
 public class MessageService {
 	
 	@Autowired
@@ -38,7 +42,7 @@ public class MessageService {
 	 * Adds a user to the database
 	 * 
 	 * @param name of user supplied by spring security
-	 * @return The full entity of new user
+	 * @return The full entity of new user or null
 	 */
 	public User addUser ( String name ) {
 		
@@ -59,7 +63,7 @@ public class MessageService {
 		// Find members and check we have them all
 		List<User> members = (List<User>) uRepo.findAllById(ids);
 		if ( members.size() != ids.size() )
-			throw new IOException ("ids of all members not found in DB");
+			throw new IOException ("ids of all members not found in DB. Found: " + members.size() + ", Supplied: " + ids.size());
 		
 		MessageThread mt = new MessageThread();
 		mt.setMembers(members);
@@ -68,15 +72,46 @@ public class MessageService {
 	}
 	
 	/**
-	 * No Message may be added without an existing message thread or sender id.
+	 * No Message may be added without an existing message thread and sender id.
 	 * This method adds a new message to the supplied messagethread id and sender
 	 * id.
 	 * 
 	 * @param content
 	 * @param mtId id of thread
+	 * @return new message entity or null
+	 */
+	public Message addMessage ( String content, long mtId, long sender ) throws IOException {
+				
+		// Get sender and mt by parameters
+		User newSender = uRepo.findById(sender).orElseThrow(IOException::new);		
+		MessageThread mt = mtRepo.findById(mtId).orElseThrow(IOException::new);
+		
+		// Check sender is in message thread
+		// necessary for bad actors
+		if ( ! mt.getMemberIds().contains(sender) )
+			throw new IOException ("Sender not in thread.");
+		
+		// done with checks, construct message.
+		
+		Message newMessage = new Message();
+		newMessage.setContent(content);
+		newMessage.setSender(newSender);
+		
+		return mRepo.save(newMessage);
+		
+	}
+	
+	/**
+	 * Finds a message thread based on sender and target. This is the main method
+	 * used when a user clicks on a message button. If it doesn't find an existing
+	 * thread, it creates a new one.
+	 *  
+	 * @param sender
+	 * @param target
 	 * @return
 	 */
-	public Message addMessage ( String content, long mtId, long sender ) {
+	public MessageThread getThreadByTarget ( long sender, long target ) {
 		
+		return null;
 	}
 }
