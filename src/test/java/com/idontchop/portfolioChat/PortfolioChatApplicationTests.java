@@ -154,7 +154,7 @@ class PortfolioChatApplicationTests {
 	
 
 	
-	@Test
+	
 	@Order(1)
 	@WithMockUser(value = "20")
 	void findTests () {
@@ -173,7 +173,7 @@ class PortfolioChatApplicationTests {
 		
 	}
 
-	@Test
+	
 	@Order(2)
 	@WithMockUser(value = "15")
 	void findSecurityTests () {
