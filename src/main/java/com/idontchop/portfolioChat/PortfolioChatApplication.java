@@ -2,6 +2,8 @@ package com.idontchop.portfolioChat;
 
 import java.util.ArrayList;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -33,8 +35,8 @@ public class PortfolioChatApplication implements CommandLineRunner {
 	}
 	
 	@RequestMapping ("/helloWorld")
-	public String helloWorld() {
-		return "Hello Future Chat App";
+	public String helloWorld(HttpServletRequest request) {
+		return "Hello Future Chat App" + request.getRemoteAddr();
 	}
 	
 	@RequestMapping ("/user")

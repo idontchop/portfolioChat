@@ -33,6 +33,8 @@ public class MessageThread {
 
 	public MessageThread () {
 		
+		members = new ArrayList<>();
+		
 	}
 	
 	public long getId() {

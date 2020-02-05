@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.spel.spi.EvaluationContextExtension;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -16,6 +17,7 @@ import com.idontchop.portfolioChat.JwtFilter;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	Logger logger = LoggerFactory.getLogger(WebSecurityConfig.class);
@@ -29,10 +31,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 		.and()
 			.csrf().disable()
-		.antMatcher("/**")
 		.authorizeRequests()
-			.antMatchers("/", "/helloWorld**")
-			.permitAll()
+			.antMatchers("/", "/helloWorld**").permitAll()
+			.antMatchers("/**").hasIpAddress("0:0:0:0:0:0:0:1")			
 		.anyRequest()
 			.authenticated()
 		.and()

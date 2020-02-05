@@ -1,5 +1,6 @@
 package com.idontchop.portfolioChat.repositories;
 
+import java.security.Principal;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -9,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RestResource;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import com.idontchop.portfolioChat.model.Message;
 import com.idontchop.portfolioChat.model.MessageThread;
@@ -26,7 +28,7 @@ import com.idontchop.portfolioChat.model.MessageThread;
  */
 public interface MessageRepository extends CrudRepository<Message, Long > {
 	
-	@Query ( value = "FROM Message m join fetch m.messageThread.members mem WHERE m.messageThread.id = :MessageThread and mem.name = ?#{principal.username}")
+	@Query ( value = "FROM Message m join fetch m.messageThread.members mem WHERE m.messageThread.id = :MessageThread and mem.name = ?#{principal}")
 	Iterable<Message> findAllByMessageThread_id( @Param("MessageThread") long mt );
 
 	@Override
@@ -34,11 +36,14 @@ public interface MessageRepository extends CrudRepository<Message, Long > {
 	<S extends Message> S save(S entity) ;
 
 	@Override
-	@Query ( value = "FROM Message m  WHERE m.id = :id and m.sender.name = ?#{principal.username}")
+	@Query ( value = "FROM Message m  WHERE m.id = :id and m.sender.name = ?#{principal}")
 	Optional<Message> findById(Long id) ;
 
+	@Query ( value = "FROM Message m  WHERE m.id = :id and m.sender.name = ?#{principal}")
+	Message findOne(Long id);
+	
 	@Override
-	@Query ( value = "FROM Message m WHERE m.sender.name = ?#{principal.username}")
+	@Query ( value = "FROM Message m WHERE m.sender.name = ?#{principal}")
 	Iterable<Message> findAll();
 
 	@Override
@@ -55,7 +60,7 @@ public interface MessageRepository extends CrudRepository<Message, Long > {
 	value = "DELETE m FROM message m CROSS JOIN chat_user u ON u.id = m.sender_id "
 			+ "WHERE m.id=:id and name=?#{principal.name}"
 			)*/
-	@RestResource ( exported = false )
+	@PreAuthorize ( "@messageRepository.findOne(#id)?.sender?.name == principal" )
 	void deleteById(Long id);
 	
 	@Transactional
