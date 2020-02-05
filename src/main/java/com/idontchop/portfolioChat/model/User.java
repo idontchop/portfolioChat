@@ -29,6 +29,11 @@ public class User {
 		
 	}
 	
+	// Used when we need a default user object
+	public User (long id) {
+		this.id = id;
+	}
+	
 	public User (String id) {
 		this.name = id;
 	}

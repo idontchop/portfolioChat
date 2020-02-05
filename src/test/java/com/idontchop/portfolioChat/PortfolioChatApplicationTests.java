@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,13 +15,21 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,11 +62,17 @@ class PortfolioChatApplicationTests {
 	MessageService ms;
 	
 	@Test
+	@WithMockUser ( username="17" )
 	void contextLoads() {
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		logger.info(auth.getPrincipal().getClass().toString());
 	}
 	
-	@Test
-	@WithMockUser(value = "17") 
+	
+	
+	
+	@WithMockUser(username="17",authorities={"USER"}, password = "admin") 
 	void addTests() throws IOException {
 		
 		List<Long> ll = new ArrayList<>();
@@ -69,8 +84,18 @@ class PortfolioChatApplicationTests {
 
 		//MessageThread mt = ms.addThread(ll);
 		//assertTrue ( mt != null);
+
 		
-		ms.addMessage("New Message 1", 14L, 1L);
+
+		MessageThread mt = ms.getThreadByTarget(1L, 12L);
+
+		Optional<MessageThread> m = mtRepo.findByMembers("17", "20");
+		assertTrue (m.isPresent());
+		assertTrue (mt != null);
+		
+		ms.addMessage("New Message 10", mt.getId(), 1L);
+		
+
 		
 	}
 	
@@ -121,42 +146,48 @@ class PortfolioChatApplicationTests {
 		results = q.list();
 		
 		assertTrue (results.size() > 0);
-		logger.info("".format("%d", results.size()));
+		logger.info(String.format("%d", results.size()));
 		
 		assertTrue ( results.get(0) instanceof MessageThread);
 		assertTrue ( ((MessageThread) results.get(0)).getId() == 1 );
 	}
 	
+
 	
-	@WithMockUser(value = "17")
+	@Test
+	@Order(1)
+	@WithMockUser(value = "20")
 	void findTests () {
 
-		Optional<MessageThread> mtt = mtRepo.findByMembers(11L, 12L);
+		Optional<MessageThread> mtt = mtRepo.findByMembers("17", "20");
 		assertTrue ( mtt.isPresent() );
-		assertTrue(mtt.get().getId() == 3L);	
+
+		Pageable page = PageRequest.of(0, 1);		
+		Page<Message> p = mRepo.findAllByCreatedAfter(new Date(), 21L, page);
+		assertTrue (p.getTotalElements() == 0);
 		
-		//Optional<MessageThread> mt = mtRepo.findByMembers(14L, 15L);
+
+		p = mRepo.findAllByCreatedAfter(new Date (System.currentTimeMillis()-24*60*60*1000), 21L, page);
+		assertTrue (p.getTotalPages() == 3);
+		assertTrue (p.getTotalElements() == 3);
 		
-		//assertTrue (mt.isPresent() );
-		//assertTrue ( mt.get().getId() == 1L);
-		
-		/*
-		Iterable<Message> l = mRepo.findAllByMessageThread_id(1);
-		
-		assertTrue ( l.iterator().hasNext() );
-		
-		l.forEach( t -> System.out.println(t.getId()));
-		
-		List<Long> lList = new ArrayList<>();
-		
-		lList.add(1L); lList.add(2L);
-		
-		assertTrue ( mRepo.findAllById( lList ).iterator().hasNext() );
-		*/
 	}
 
-
 	@Test
+	@Order(2)
+	@WithMockUser(value = "15")
+	void findSecurityTests () {
+		
+		Pageable page = PageRequest.of(0, 1);		
+		Page<Message> p = mRepo.findAllByCreatedAfter(new Date(), 21L, page);
+		assertTrue (p.getTotalElements() == 0);
+
+		p = mRepo.findAllByCreatedAfter(new Date (System.currentTimeMillis()-24*60*60*1000), 21L, page);
+		assertTrue (p.getTotalPages() == 3);
+		assertTrue (p.getTotalElements() == 3);
+		
+	}
+	
 	@WithMockUser ( value = "17" )
 	void messageRepoTests () {
 		

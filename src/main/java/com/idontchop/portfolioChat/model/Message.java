@@ -108,6 +108,14 @@ public class Message {
 	public void setSender(User sender) {
 		this.sender = sender;
 	}
+
+	public MessageThread getMessageThread() {
+		return messageThread;
+	}
+
+	public void setMessageThread(MessageThread messageThread) {
+		this.messageThread = messageThread;
+	}
 	
 	
 }

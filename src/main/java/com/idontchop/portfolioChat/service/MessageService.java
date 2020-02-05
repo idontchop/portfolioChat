@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +30,8 @@ import com.idontchop.portfolioChat.repositories.UserRepository;
  */
 @Service
 public class MessageService {
+	
+	Logger logger = LoggerFactory.getLogger(MessageService.class);
 	
 	@Autowired
 	private UserRepository uRepo;
@@ -76,42 +80,99 @@ public class MessageService {
 	 * This method adds a new message to the supplied messagethread id and sender
 	 * id.
 	 * 
+	 * This method is intended to be called with messagethread and sender lookups already
+	 * known. If a new entity is passed, likely result is an error as checks will fail
+	 * null values will return null
+	 * 
 	 * @param content
 	 * @param mtId id of thread
 	 * @return new message entity or null
 	 */
-	public Message addMessage ( String content, long mtId, long sender ) throws IOException {
-				
-		// Get sender and mt by parameters
-		User newSender = uRepo.findById(sender).orElseThrow(IOException::new);		
-		MessageThread mt = mtRepo.findById(mtId).orElseThrow(IOException::new);
+	public Message addMessage ( String content, MessageThread mt, User sender ) throws IOException {
+
+		if ( mt == null || sender == null ) return null;
 		
 		// Check sender is in message thread
 		// necessary for bad actors
-		if ( ! mt.getMemberIds().contains(sender) )
+		if ( ! mt.getMemberIds().contains(sender.getId()) )
 			throw new IOException ("Sender not in thread.");
 		
 		// done with checks, construct message.
 		
 		Message newMessage = new Message();
 		newMessage.setContent(content);
-		newMessage.setSender(newSender);
+		newMessage.setSender(sender);
+		newMessage.setMessageThread(mt);
 		
 		return mRepo.save(newMessage);
 		
 	}
 	
 	/**
+	 * Overloaded for ids only, will make another database call.
+	 */
+	public Message addMessage ( String content, long mtId, long sender ) throws IOException {
+		
+		// Get sender and mt by parameters
+		User newSender = uRepo.findById(sender).orElseThrow(IOException::new);		
+		MessageThread mt = mtRepo.findById(mtId).orElseThrow(IOException::new);
+		
+		return addMessage ( content, mt, newSender );
+	}
+	
+	/**
 	 * Finds a message thread based on sender and target. This is the main method
 	 * used when a user clicks on a message button. If it doesn't find an existing
 	 * thread, it creates a new one.
+	 * 
+	 * This method checks for null, but does not check if the passed entity is
+	 * in the database. This method shouldn't be called if the entity isn't
+	 * created by a database call.
 	 *  
 	 * @param sender
 	 * @param target
 	 * @return
+	 * @throws IOException 
 	 */
+	public MessageThread getThreadByTarget ( User sender, User target ) {
+		
+		// send me nulls, I return nulls
+		if ( sender == null || target == null ) {
+			return null;
+		}
+		
+		MessageThread mt = mtRepo.findByMembers(sender.getName(), target.getName()).orElseGet( () -> {
+			
+			// Couldn't find a thread so creating a new one
+			logger.info("New Thread: " + sender.getId() + " " + target.getId() );
+			MessageThread newMt = new MessageThread();
+			newMt.addMember(sender);
+			newMt.addMember(target);
+			return mtRepo.save(newMt);
+		});
+		
+		return mt;
+	}
+	
+	/**
+	 * Overloaded to find the members by their JWT name
+	 * */
+	public MessageThread getThreadByTarget ( String sender, String target ) {
+		
+		User senderId = uRepo.findByName(sender).orElse(null);
+		User targetId = uRepo.findByName(target).orElse(null);
+		
+		return getThreadByTarget ( senderId, targetId );
+	}
+	
+	/**
+	 * Overloaded to find the members by their id
+	 * */
 	public MessageThread getThreadByTarget ( long sender, long target ) {
 		
-		return null;
+		User senderId = uRepo.findById(sender).orElse(null);
+		User targetId = uRepo.findById(target).orElse(null);
+		
+		return getThreadByTarget ( senderId, targetId );
 	}
 }

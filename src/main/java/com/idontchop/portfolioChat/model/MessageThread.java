@@ -59,8 +59,36 @@ public class MessageThread {
 		this.id = id;
 	}
 
+	/**
+	 * Adds a member to this thread. Will create member list if
+	 * empty thread.
+	 * 
+	 * @param user
+	 */
 	public void addMember (User user) {
+		
+		if ( members == null ) {
+			members = new ArrayList<>();
+		}
 		members.add(user);
+	}
+	
+	public boolean hasMembers () {
+		if ( members == null || members.size() == 0 )
+			return false;
+		else return true;
+	}
+	
+	public boolean containsMember (long id) {
+		return members.stream().anyMatch( e -> e.getId() == id);
+	}
+	
+	public boolean containsMemeber (String name) {
+		return members.stream().anyMatch( e-> e.getName() == name);
+	}
+	
+	public boolean containsMember (User u) {
+		return members.stream().anyMatch ( e -> e.getId() == u.getId());
 	}
 	
 	public List<User> getMembers() {

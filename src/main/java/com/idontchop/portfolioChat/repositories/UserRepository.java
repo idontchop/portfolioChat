@@ -22,6 +22,8 @@ public interface UserRepository extends CrudRepository<User, Long> {
 	@Override
 	<S extends User> S save(S entity) ;
 
+	Optional<User> findByName(String name);
+	
 	@Override
 	Optional<User> findById(Long id);
 
