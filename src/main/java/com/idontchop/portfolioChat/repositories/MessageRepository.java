@@ -61,16 +61,11 @@ public interface MessageRepository extends PagingAndSortingRepository<Message, L
 	@Query ( value = "FROM Message m WHERE m.id IN :ids")
 	Iterable<Message> findAllById(Iterable<Long> ids);
 
-	/*
-	 * Seemed to be some limitations in writing the hql query.
-	 * Use deleteByIdAndMember_Name instead
-	 */
+
 	@Override
-	/*@Modifying
-	@Query ( nativeQuery = true,
-	value = "DELETE m FROM message m CROSS JOIN chat_user u ON u.id = m.sender_id "
-			+ "WHERE m.id=:id and name=?#{principal.name}"
-			)*/
+	/**
+	 * Can only delete your own message
+	 */
 	@PreAuthorize ( "@messageRepository.findOne(#id)?.sender?.name == principal" )
 	void deleteById(Long id);
 	
