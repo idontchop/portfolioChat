@@ -41,13 +41,15 @@ public interface MessageRepository extends PagingAndSortingRepository<Message, L
 	@Query ( value = "FROM Message m WHERE m.sender.name = ?#{principal}")
 	Page<Message> findAll(Pageable pageable);
 
-	@PreAuthorize( "@messageThreadRepository.findOne(#MessageThread) != null")
-	@Query ( value = "FROM Message m WHERE m.messageThread.id = :MessageThread ORDER BY m.created desc")
-	Page<Message> findAllByMessageThread_id( @Param("MessageThread") long mt, Pageable p );
+	@PreAuthorize( "@messageThreadRepository.findOne(#id) != null")
+	@Query ( value = "FROM Message m WHERE m.messageThread.id = :id ORDER BY m.created desc")
+	@RestResource ( path = "/findByMessageThread", rel = "findByMessageThread" )
+	Page<Message> findAllByMessageThread_id( @Param("id") long mt, Pageable p );
 
-	@PreAuthorize( "@messageThreadRepository.findOne(#mtId) != null")
-	@Query ( value = "FROM Message m WHERE m.messageThread.id = :mtId AND m.created > :date ORDER BY m.created desc")
-	Page<Message> findAllByCreatedAfter(Date date, long mtId, Pageable p);
+	@PreAuthorize( "@messageThreadRepository.findOne(#id) != null")
+	@Query ( value = "FROM Message m WHERE m.messageThread.id = :id AND m.created > :date ORDER BY m.created desc")
+	@RestResource (path = "/findAllSince", rel = "findAllSince")
+	Page<Message> findAllByCreatedAfter(Date date, long id, Pageable p);
 	
 	@Override
 	@RestResource (exported = false)
