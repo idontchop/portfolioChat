@@ -106,7 +106,6 @@ class PortfolioChatApplicationTests {
 	@WithMockUser("17")
 	void hibernateDeleteTest () {
 		
-		
 	}
 	
 	void hibernateTest ( ) {

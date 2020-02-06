@@ -159,6 +159,7 @@ public class MessageService {
 		
 		// send me nulls, I return nulls
 		if ( sender == null || target == null ) {
+			logger.debug("getThreadByTarget received null: " + sender.getClass().toString() + ":" + target.getClass().toString());
 			return null;
 		}
 		
