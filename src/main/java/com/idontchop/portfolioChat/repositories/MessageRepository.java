@@ -8,6 +8,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -35,11 +36,17 @@ import com.idontchop.portfolioChat.model.MessageThread;
  */
 public interface MessageRepository extends PagingAndSortingRepository<Message, Long > {
 	
-	@Query ( value = "FROM Message m join fetch m.messageThread.members mem WHERE m.messageThread.id = :MessageThread and mem.name = ?#{principal.username}")
-	Iterable<Message> findAllByMessageThread_id( @Param("MessageThread") long mt );
+
+	@Override
+	@Query ( value = "FROM Message m WHERE m.sender.name = ?#{principal}")
+	Page<Message> findAll(Pageable pageable);
+
+	@PreAuthorize( "@messageThreadRepository.findOne(#MessageThread) != null")
+	@Query ( value = "FROM Message m WHERE m.messageThread.id = :MessageThread ORDER BY m.created desc")
+	Page<Message> findAllByMessageThread_id( @Param("MessageThread") long mt, Pageable p );
 
 	@PreAuthorize( "@messageThreadRepository.findOne(#mtId) != null")
-	@Query ( value = "FROM Message m WHERE m.messageThread.id = :mtId AND m.created > :date")
+	@Query ( value = "FROM Message m WHERE m.messageThread.id = :mtId AND m.created > :date ORDER BY m.created desc")
 	Page<Message> findAllByCreatedAfter(Date date, long mtId, Pageable p);
 	
 	@Override
@@ -47,20 +54,21 @@ public interface MessageRepository extends PagingAndSortingRepository<Message, L
 	<S extends Message> S save(S entity) ;
 
 	@Override
-	@Query ( value = "FROM Message m  WHERE m.id = :id and m.sender.name = ?#{principal.username}")
+	@Query ( value = "FROM Message m  WHERE m.id = :id and m.sender.name = ?#{principal}")
 	Optional<Message> findById(Long id) ;
 
-	@Query ( value = "FROM Message m  WHERE m.id = :id and m.sender.name = ?#{principal.username}")
+	@Query ( value = "FROM Message m  WHERE m.id = :id and m.sender.name = ?#{principal}")
+	@RestResource (exported = false)
 	Message findOne(Long id);
 	
-	@Override
-	@Query ( value = "FROM Message m WHERE m.sender.name = ?#{principal.username}")
-	Iterable<Message> findAll();
+	//@Override
+	//@Query ( value = "FROM Message m WHERE m.sender.name = ?#{principal}")
+	//Iterable<Message> findAll();
 
 	@Override
 	@Query ( value = "FROM Message m WHERE m.id IN :ids")
+	@RestResource ( exported = false )
 	Iterable<Message> findAllById(Iterable<Long> ids);
-
 
 	@Override
 	/**
@@ -69,7 +77,7 @@ public interface MessageRepository extends PagingAndSortingRepository<Message, L
 	@PreAuthorize ( "@messageRepository.findOne(#id)?.sender?.name == principal" )
 	void deleteById(Long id);
 	
-	@Transactional
+	@RestResource ( exported = false )
 	void deleteByIdAndSender_Name ( long id, String name );
 
 	@Override

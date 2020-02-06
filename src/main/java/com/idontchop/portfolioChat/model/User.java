@@ -12,6 +12,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table( name = "chat_user" )
 public class User {
@@ -26,7 +28,6 @@ public class User {
     private Collection<MessageThread> messageThreads;
 	
 	public User () {
-		
 	}
 	
 	// Used when we need a default user object
@@ -37,8 +38,6 @@ public class User {
 	public User (String id) {
 		this.name = id;
 	}
-
-
 
 	public long getId() {
 		return id;
@@ -55,7 +54,4 @@ public class User {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	
-
 }

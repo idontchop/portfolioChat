@@ -23,11 +23,17 @@ public interface MessageThreadRepository extends CrudRepository<com.idontchop.po
 	@RestResource (exported = false)
 	 <S extends MessageThread> S save(S entity);
 	
-	@Query ( value = "FROM MessageThread t join fetch t.members m WHERE t.id = :id AND m.name = ?#{principal.username}")	
+/*	@Query ( value = "FROM MessageThread t join fetch t.members m WHERE t.id = :id AND m.name = ?#{principal}")*/	
+	@Query ( value = "FROM MessageThread mt WHERE mt.id = :id AND EXISTS "
+			+ "(SELECT mm.name FROM mt.members mm WHERE "
+			+ "mm.name = ?#{principal})")
 	MessageThread findOne(long id);
 
 	@Override
-	@Query ( value = "FROM MessageThread t join fetch t.members m WHERE t.id = :id AND m.name = ?#{principal.username}")
+	/*@Query ( value = "FROM MessageThread t join fetch t.members m WHERE t.id = :id AND m.name = ?#{principal}")*/
+	@Query ( value = "FROM MessageThread mt WHERE mt.id = :id AND EXISTS "
+			+ "(SELECT mm.name FROM mt.members mm WHERE "
+			+ "mm.name = ?#{principal})")
 	Optional<MessageThread> findById(Long id);
 	
 	//@Query ( value = "FROM MessageThread t join fetch t.members m WHERE id1 IN ")
@@ -72,7 +78,12 @@ public interface MessageThreadRepository extends CrudRepository<com.idontchop.po
 	void delete(MessageThread entity);
 
 	@Override
-	@Query ( value = "FROM MessageThread t join fetch t.members m WHERE m.name = ?#{principal.username} ")
+	/*@Query ( value = "FROM MessageThread m WHERE EXISTS "
+			+ "(SELECT mm.name FROM MessageThread t join t.members mm WHERE "
+			+ "t.id = m.id AND mm.name = ?#{principal})") */
+	@Query ( value = "FROM MessageThread mt WHERE EXISTS "
+			+ "(SELECT mm.name FROM mt.members mm WHERE "
+			+ "mm.name = ?#{principal})")
 	Iterable<MessageThread> findAll() ;
 	
 }

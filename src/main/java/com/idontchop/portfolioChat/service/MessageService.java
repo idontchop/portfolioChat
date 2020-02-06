@@ -57,12 +57,33 @@ public class MessageService {
 	}
 	
 	/**
+	 * Creates a thread from the authenticated user to the supplied target
+	 * id. If the auth user does not have a saved user entity, it is
+	 * created.
+	 * 
+	 * @param id target user
+	 * @param name the authenticated user
+	 * @return
+	 */
+	public MessageThread createThread ( long id, String name ) throws IOException {
+		
+		User authUser = uRepo.findByName(name).orElseGet( () -> {
+			return addUser (name);
+		});
+		
+		return getThreadByTarget ( authUser.getId(), id);
+		
+	}
+	
+	/**
 	 * Creates a new message thread with the supplied member ids
+	 * 
+	 * Stays private for now, not sure we'd ever want a controller to call this
 	 * 
 	 * @param members Minimum of 2 ids corresponding to users
 	 * @return the new message thread entity
 	 */
-	public MessageThread addThread ( List<Long> ids) throws IOException {
+	private MessageThread addThread ( List<Long> ids) throws IOException {
 		
 		// Find members and check we have them all
 		List<User> members = (List<User>) uRepo.findAllById(ids);

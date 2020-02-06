@@ -15,6 +15,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class MessageThread {
 
@@ -24,6 +26,7 @@ public class MessageThread {
 	
 	@ManyToMany ( fetch = FetchType.EAGER )
 	@Size( min=1 , max=10 )
+	@JsonIgnore
 	private List<User> members;
 	
     @OneToMany(mappedBy = "messageThread", orphanRemoval = true)
