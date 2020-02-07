@@ -53,7 +53,7 @@ public interface MessageRepository extends PagingAndSortingRepository<Message, L
 	
 	@Override
 	@RestResource (exported = false)
-	<S extends Message> S save(S entity) ;
+	<S extends Message> S save(S msg) ;
 
 	@Override
 	@Query ( value = "FROM Message m  WHERE m.id = :id and m.sender.name = ?#{principal}")

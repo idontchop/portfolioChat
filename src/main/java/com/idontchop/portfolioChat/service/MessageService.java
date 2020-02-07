@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.idontchop.portfolioChat.events.MessageEventHandler;
 import com.idontchop.portfolioChat.model.Message;
 import com.idontchop.portfolioChat.model.MessageThread;
 import com.idontchop.portfolioChat.model.User;
@@ -32,6 +33,9 @@ import com.idontchop.portfolioChat.repositories.UserRepository;
 public class MessageService {
 	
 	Logger logger = LoggerFactory.getLogger(MessageService.class);
+	
+	@Autowired
+	private MessageEventHandler messageEventHandler;
 	
 	@Autowired
 	private UserRepository uRepo;
@@ -125,6 +129,9 @@ public class MessageService {
 		newMessage.setSender(sender);
 		newMessage.setMessageThread(mt);
 		
+		// TODO: create aspect, get sockets working adequately on frontend first
+		messageEventHandler.newMessage(newMessage);
+		
 		return mRepo.save(newMessage);
 		
 	}
@@ -140,6 +147,18 @@ public class MessageService {
 		
 		return addMessage ( content, mt, newSender );
 	}
+	
+	/**
+	 * Overloaded for ids only, will make another database call.
+	 */
+	public Message addMessage ( String content, long mtId, String sender ) throws IOException {
+		
+		// Get sender and mt by parameters
+		User newSender = uRepo.findByName(sender).orElseThrow(IOException::new);		
+		MessageThread mt = mtRepo.findById(mtId).orElseThrow(IOException::new);
+		
+		return addMessage ( content, mt, newSender );
+	}	
 	
 	/**
 	 * Finds a message thread based on sender and target. This is the main method
