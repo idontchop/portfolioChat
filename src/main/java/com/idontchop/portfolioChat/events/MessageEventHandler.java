@@ -24,7 +24,8 @@ public class MessageEventHandler {
 		// send notification of new message to every member of thread
 		message.getMessageThread().getMembers().forEach( m -> {
 			logger.info("websocket send to " + m.getId());
-			websocket.convertAndSendToUser(Long.toString(m.getId()), "/secured/thread", message);
+			websocket.convertAndSendToUser(Long.toString(m.getId()),
+					"/secured/user/queue/specific-user", message);
 		});
 	}
 	
