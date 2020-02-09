@@ -128,10 +128,7 @@ public class MessageService {
 		newMessage.setContent(content);
 		newMessage.setSender(sender);
 		newMessage.setMessageThread(mt);
-		
-		// TODO: create aspect, get sockets working adequately on frontend first
-		messageEventHandler.newMessage(newMessage);
-		
+				
 		return mRepo.save(newMessage);
 		
 	}
