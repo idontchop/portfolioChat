@@ -6,6 +6,7 @@ import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +29,13 @@ public class MessageController {
 
 	@Autowired
 	private MessageService messageService;
+	
+	@Autowired
+	private final SimpUserRegistry simpUserRegistry;
+	
+    public MessageController(SimpUserRegistry simpUserRegistry) {
+        this.simpUserRegistry = simpUserRegistry;
+    }
 	
 	@PostMapping ("/newThread")
 	public MessageThread addThread (

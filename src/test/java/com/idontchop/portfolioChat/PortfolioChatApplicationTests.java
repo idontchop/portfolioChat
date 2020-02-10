@@ -1,6 +1,7 @@
 package com.idontchop.portfolioChat;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,7 +19,6 @@ import org.hibernate.query.Query;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +43,6 @@ import com.idontchop.portfolioChat.repositories.UserRepository;
 import com.idontchop.portfolioChat.service.MessageService;
 
 @SpringBootTest
-@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
 class PortfolioChatApplicationTests {
 
