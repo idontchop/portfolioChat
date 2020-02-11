@@ -57,6 +57,14 @@ public class MessageThread {
 		
 		return ml;
 	}
+	
+	public List<String> getMemberNames() {
+		
+		List<String> ml = new ArrayList<>();
+		members.forEach( m -> ml.add(m.getName()));
+		
+		return ml;
+	}
 
 	public void setId(long id) {
 		this.id = id;

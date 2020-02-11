@@ -46,6 +46,14 @@ public interface MessageRepository extends PagingAndSortingRepository<Message, L
 	@RestResource ( path = "/findByMessageThread", rel = "findByMessageThread" )
 	Page<Message> findAllByMessageThread_id( @Param("id") long mt, Pageable p );
 
+	/**
+	 * Primary call used by Message Thread Window in front end
+	 * 
+	 * @param date
+	 * @param id
+	 * @param p
+	 * @return
+	 */
 	@PreAuthorize( "@messageThreadRepository.findOne(#id) != null")
 	@Query ( value = "FROM Message m WHERE m.messageThread.id = :id AND m.created > :date ORDER BY m.created desc")
 	@RestResource (path = "/findAllSince", rel = "findAllSince")
