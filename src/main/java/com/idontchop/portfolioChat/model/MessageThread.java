@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -13,13 +15,18 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.Formula;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.idontchop.portfolioChat.service.MessageService;
 
 @Entity
 public class MessageThread {
-
+	
 	@Id
 	@GeneratedValue ( strategy = GenerationType.IDENTITY)
 	private long id;
@@ -33,7 +40,7 @@ public class MessageThread {
     private Collection<Message> messages;
     
     private Date created = new Date();
-
+    
 	public MessageThread () {
 		
 		members = new ArrayList<>();

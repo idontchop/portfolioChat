@@ -107,6 +107,17 @@ class PortfolioChatApplicationTests {
 		
 	}
 	
+	@Test
+	@WithMockUser("176") 
+	void repoTests_message () {
+		
+		System.out.println(mRepo.unSeen(3L));
+		assertTrue (mRepo.unSeen(3L) == 3);
+		
+		mRepo.setSeen(3L, "176");
+		
+	}
+	
 	void hibernateTest ( ) {
 		
 		assertTrue (entityManagerFactory.isOpen());

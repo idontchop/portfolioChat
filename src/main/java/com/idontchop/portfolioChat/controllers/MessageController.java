@@ -6,10 +6,13 @@ import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -53,5 +56,26 @@ public class MessageController {
 		return messageService.addMessage(content, messageThreadId, principal.getName());
 	}
 	
+	/**
+	 * Sets the seen field in messages entity 
+	 * 
+	 * called by frontend when there is a successful downlaod of a message thread.
+	 * @return
+	 */
+	@PutMapping ("/seenThread/{messageThreadId}")
+	public ResponseEntity<String> getThread (
+			@PathVariable long messageThreadId, Principal principal) {
+		
+		messageService.setSeenMessages(messageThreadId, principal);
+		
+		return ResponseEntity.ok("{ \"message\": \"ok\" }");
+	}
+	
+	@GetMapping ( "/unSeen/{messageThreadId}")
+	public ResponseEntity<String> getUnSeen (
+			@PathVariable long messageThreadId) {
+		
+		return ResponseEntity.ok("{ \"num\": \"" + messageService.getUnseenMessages(messageThreadId) + "\" }");
+	}
 	
 }

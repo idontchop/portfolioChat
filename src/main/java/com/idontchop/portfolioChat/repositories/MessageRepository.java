@@ -37,6 +37,18 @@ import com.idontchop.portfolioChat.model.MessageThread;
 public interface MessageRepository extends PagingAndSortingRepository<Message, Long > {
 	
 
+	@PreAuthorize ( "@messageThreadRepository.findOne(#mtId) != null")
+	@Query ( value = "SELECT COUNT(*) FROM Message m WHERE m.messageThread.id = :mtId  AND m.sender.name != ?#{principal}")
+	int unSeen(long mtId);
+	
+	@PreAuthorize ( "@messageThreadRepository.findOne(#mtId) != null")
+	@Transactional
+	@Modifying
+	@Query ( value = "update message m JOIN chat_user u on u.id = m.message_thread_id "
+			+ "set seen=current_timestamp() where m.message_thread_id = :mtId AND u.name !=:principal",
+			nativeQuery = true )
+	void setSeen(long mtId, String principal);
+	
 	@Override
 	@Query ( value = "FROM Message m WHERE m.sender.name = ?#{principal}")
 	Page<Message> findAll(Pageable pageable);

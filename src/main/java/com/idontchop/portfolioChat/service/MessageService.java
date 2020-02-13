@@ -1,6 +1,7 @@
 package com.idontchop.portfolioChat.service;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -212,5 +213,27 @@ public class MessageService {
 		User targetId = uRepo.findById(target).orElse(null);
 		
 		return getThreadByTarget ( senderId, targetId );
+	}
+	
+	/**
+	 * Finds the number of unseen messages in a thread for the current user.
+	 * This is used in the message thread model to support field in rest data.
+	 * @param messageThreadId
+	 * @return int # of unseen messages
+	 */
+	public int getUnseenMessages(long messageThreadId) {
+		return mRepo.unSeen(messageThreadId);
+	}
+	
+	/**
+	 * Sets all messages seen on the supplied thread. Will only set seen on messages
+	 * not sent by user.
+	 * 
+	 * @param messageThreadId
+	 * @param principal 
+	 */
+	public void setSeenMessages(long messageThreadId, Principal principal) {
+		
+		mRepo.setSeen(messageThreadId, principal.getName());
 	}
 }
