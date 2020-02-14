@@ -49,6 +49,14 @@ public class MessageController {
 		
 	}
 	
+	@PostMapping ("/newThreadToName/{name}")
+	public MessageThread addThreadToName (
+			@PathVariable String name, Principal principal) {
+		
+		return messageService.createThread(name, principal.getName());
+	}
+			
+	
 	@PostMapping ("/newTextMessage/{messageThreadId}")
 	public Message addTextMessage (
 			 @PathVariable long messageThreadId, @RequestParam String content, Principal principal) throws IOException {
@@ -68,7 +76,7 @@ public class MessageController {
 		
 		messageService.setSeenMessages(messageThreadId, principal);
 		
-		return ResponseEntity.ok("{ \"message\": \"ok\" }");
+		return ResponseEntity.ok("{ \"message\": \"" + principal.getName() + "\" }");
 	}
 	
 	@GetMapping ( "/unSeen/{messageThreadId}")

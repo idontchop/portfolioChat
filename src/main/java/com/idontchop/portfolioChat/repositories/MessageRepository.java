@@ -38,13 +38,13 @@ public interface MessageRepository extends PagingAndSortingRepository<Message, L
 	
 
 	@PreAuthorize ( "@messageThreadRepository.findOne(#mtId) != null")
-	@Query ( value = "SELECT COUNT(*) FROM Message m WHERE m.messageThread.id = :mtId  AND m.sender.name != ?#{principal}")
+	@Query ( value = "SELECT COUNT(*) FROM Message m WHERE m.seen is null AND m.messageThread.id = :mtId  AND m.sender.name != ?#{principal}")
 	int unSeen(long mtId);
 	
 	@PreAuthorize ( "@messageThreadRepository.findOne(#mtId) != null")
 	@Transactional
 	@Modifying
-	@Query ( value = "update message m JOIN chat_user u on u.id = m.message_thread_id "
+	@Query ( value = "update message m JOIN chat_user u on u.id = m.sender_id "
 			+ "set seen=current_timestamp() where m.message_thread_id = :mtId AND u.name !=:principal",
 			nativeQuery = true )
 	void setSeen(long mtId, String principal);

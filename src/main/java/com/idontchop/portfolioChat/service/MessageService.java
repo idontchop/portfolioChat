@@ -66,6 +66,10 @@ public class MessageService {
 	 * id. If the auth user does not have a saved user entity, it is
 	 * created.
 	 * 
+	 * When an id is sent, the record must exist already (because we don't know name)
+	 * 
+	 * See overloaded methods in other cases.
+	 * 
 	 * @param id target user
 	 * @param name the authenticated user
 	 * @return
@@ -78,6 +82,11 @@ public class MessageService {
 		
 		return getThreadByTarget ( authUser.getId(), id);
 		
+	}
+	
+	public MessageThread createThread ( String name, String principalName)  {
+		
+		return getThreadByTarget ( principalName, name);
 	}
 	
 	/**
@@ -195,11 +204,18 @@ public class MessageService {
 	
 	/**
 	 * Overloaded to find the members by their JWT name
+	 * 
+	 * In this case, we can add the user if it doesn't exist
 	 * */
 	public MessageThread getThreadByTarget ( String sender, String target ) {
 		
-		User senderId = uRepo.findByName(sender).orElse(null);
-		User targetId = uRepo.findByName(target).orElse(null);
+		User senderId = uRepo.findByName(sender).orElseGet( () -> {
+			return addUser (sender);
+		});
+		
+		User targetId = uRepo.findByName(target).orElseGet( () -> {
+			return addUser (target);
+		});
 		
 		return getThreadByTarget ( senderId, targetId );
 	}
