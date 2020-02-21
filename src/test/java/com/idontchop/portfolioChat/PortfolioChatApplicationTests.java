@@ -107,7 +107,7 @@ class PortfolioChatApplicationTests {
 		
 	}
 	
-	@Test
+	
 	@WithMockUser("176") 
 	void repoTests_message () {
 		
