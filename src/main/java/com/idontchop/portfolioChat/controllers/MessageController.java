@@ -31,7 +31,7 @@ import com.idontchop.portfolioChat.service.MessageService;
 public class MessageController {
 
 	@Autowired
-	private MessageService messageService;
+	private MessageService messageService; 
 	
 	@Autowired
 	private final SimpUserRegistry simpUserRegistry;
