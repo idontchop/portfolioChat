@@ -20,6 +20,8 @@ logging:
     org.springframework: info
     com: debug
     org.hibernate.SQL: debug
+jwt:
+  secret: SecretKey1
 ---
 
 spring:

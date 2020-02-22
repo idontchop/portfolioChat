@@ -46,6 +46,14 @@ public class MessageService {
 	
 	@Autowired
 	private MessageThreadRepository mtRepo;
+	
+	/*
+	 * TODO: move this variable to external config 
+	 */
+	
+	private final String NEWUSERMESSAGE = "Hello! \n\nWelcome to Nate's Portfolio!\n\n"
+			+ "Check out my JWT enabled chat microservice code at my github, after dropping me a quick message.\n\n"
+			+ "Thank you for stopping by!";
 
 	/**
 	 * Adds a user to the database
@@ -80,7 +88,18 @@ public class MessageService {
 			return addUser (name);
 		});
 		
-		return getThreadByTarget ( authUser.getId(), id);
+		MessageThread newMessageThread = 
+				getThreadByTarget ( authUser.getId(), id);
+		
+		// If we are creating a new thread to the user with id of 1, create a welcome
+		// message
+		// Check also if message thread had problem being created
+		
+		if ( id == 1 && newMessageThread.getId() > 0 ) {
+			addMessage ( NEWUSERMESSAGE, newMessageThread, uRepo.findById(id).orElseThrow() );
+		}
+		
+		return newMessageThread;
 		
 	}
 	

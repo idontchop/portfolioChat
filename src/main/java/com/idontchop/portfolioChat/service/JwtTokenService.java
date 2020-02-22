@@ -7,16 +7,23 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 @Order(1)
+@Component
 public class JwtTokenService {
 	static final long EXPIRATIONTIME = 864000000;	// 1 day
-	static final String SIGNINGKEY = "SecretKey1";
+	
+	
+	static String SIGNINGKEY;
+	
 	static final String PREFIX = "Bearer";
 	
 	static Logger logger = LoggerFactory.getLogger(JwtTokenService.class);
@@ -47,5 +54,15 @@ public class JwtTokenService {
 		return null;
 	}
 
+	public  String getSIGNINGKEY() { 
+		return SIGNINGKEY;
+	}
+
+	@Value ("${jwt.secret}")
+	public void setSIGNINGKEY(String sIGNINGKEY) {
+		SIGNINGKEY = sIGNINGKEY;
+	}
+
+	
 
 }
