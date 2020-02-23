@@ -6,6 +6,9 @@ import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Controller;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.idontchop.portfolioChat.model.Message;
 import com.idontchop.portfolioChat.model.MessageThread;
@@ -64,6 +68,30 @@ public class MessageController {
 		return messageService.addMessage(content, messageThreadId, principal.getName());
 	}
 	
+	@PostMapping ( value = "/newImageMessage/{messageThreadId}")
+	public Message addImageMessage (
+			@PathVariable long messageThreadId, 
+			@RequestParam MultipartFile file, 
+			@RequestParam String content, Principal principal) throws IOException {
+		return messageService.addImageMessage(file.getBytes(), content, messageThreadId, principal.getName() );
+	}
+	
+	@GetMapping ( value = "/image/{messageThreadId}/{messageId}")
+	public ResponseEntity<Resource> getImageMessage ( 
+			@PathVariable long messageThreadId,
+			@PathVariable long messageId) {
+		
+		byte[] image = messageService.getImage(messageId, messageThreadId);
+		if (image == null ) {
+			return ResponseEntity.notFound().build();
+		} else {
+			return ResponseEntity.ok()
+					.contentType(MediaType.parseMediaType("image/jpeg"))
+					.body( new ByteArrayResource (image) );
+		}
+	}
+	
+	
 	/**
 	 * Sets the seen field in messages entity 
 	 * 
@@ -86,4 +114,5 @@ public class MessageController {
 		return ResponseEntity.ok("{ \"num\": \"" + messageService.getUnseenMessages(messageThreadId) + "\" }");
 	}
 	
+
 }

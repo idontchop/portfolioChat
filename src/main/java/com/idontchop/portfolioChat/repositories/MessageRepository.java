@@ -76,10 +76,11 @@ public interface MessageRepository extends PagingAndSortingRepository<Message, L
 	<S extends Message> S save(S msg) ;
 
 	@Override
-	@Query ( value = "FROM Message m  WHERE m.id = :id and m.sender.name = ?#{principal}")
+	@Query ( value = "FROM Message m  WHERE m.id = :id AND EXISTS (SELECT mm.name from m.messageThread.members mm WHERE mm.name = ?#{principal})")
 	Optional<Message> findById(Long id) ;
 
-	@Query ( value = "FROM Message m  WHERE m.id = :id and m.sender.name = ?#{principal}")
+	@PreAuthorize( "@messageThreadRepository.findOne(#id) != null")
+	@Query ( value = "FROM Message m  WHERE m.id = :id")
 	@RestResource (exported = false)
 	Message findOne(Long id);
 	

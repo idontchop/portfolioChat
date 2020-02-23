@@ -129,6 +129,16 @@ public class MessageService {
 		return mtRepo.save(mt);
 	}
 	
+	public byte[] getImage ( long messageId, long messageThreadId) {
+		Optional<Message> message = mRepo.findById(messageId);
+		if ( message.isEmpty() ) {
+			return null;
+		} else {
+			return message.get().getImage();
+		}
+		
+	}
+	
 	/**
 	 * No Message may be added without an existing message thread and sender id.
 	 * This method adds a new message to the supplied messagethread id and sender
@@ -159,6 +169,36 @@ public class MessageService {
 		newMessage.setMessageThread(mt);
 				
 		return mRepo.save(newMessage);
+		
+	}
+	
+	public Message addImageMessage ( byte[] imageBytes, String content, MessageThread mt, User sender ) throws IOException {
+		
+		if ( mt == null || sender == null ) return null;
+		
+		// Check sender is in message thread
+		// necessary for bad actors
+		if ( ! mt.getMemberIds().contains(sender.getId()) )
+			throw new IOException ("Sender not in thread.");
+		
+		// done with checks, construct message.
+		
+		Message newMessage = new Message();
+		newMessage.setContent(content);
+		newMessage.setImage(imageBytes); // only difference from addMessage (need to DRY)
+		newMessage.setSender(sender);
+		newMessage.setMessageThread(mt);
+				
+		return mRepo.save(newMessage);
+		
+	}
+	
+	public Message addImageMessage ( byte[] imageBytes, String content, long mtId, String sender) throws IOException {
+		
+		User newSender = uRepo.findByName(sender).orElseThrow(IOException::new);
+		MessageThread mt = mtRepo.findById(mtId).orElseThrow(IOException::new);
+		
+		return addImageMessage (imageBytes, content, mt, newSender);
 		
 	}
 	

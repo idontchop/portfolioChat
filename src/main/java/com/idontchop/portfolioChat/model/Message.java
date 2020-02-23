@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
@@ -34,6 +35,10 @@ public class Message {
 	private MesType type = MesType.MESSAGE;
 	
 	private String content;
+	
+	@Lob
+	@JsonIgnore
+	private byte[] image;
 	
 	private Date created = new Date();
 	
@@ -118,6 +123,17 @@ public class Message {
 	public void setMessageThread(MessageThread messageThread) {
 		this.messageThread = messageThread;
 	}
+
+	public byte[] getImage() {
+		return image;
+	}
+
+	public void setImage(byte[] image) {
+		this.image = image;
+		this.type = MesType.IMAGE;
+	}
+	
+	
 	
 	
 }
