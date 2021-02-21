@@ -11,7 +11,7 @@
 	<groupId>com.idontchop</groupId>
 	<artifactId>portfolioChat</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<name>portfolioChat</name>
 	<description>Chat microservice for Nate's Portfolio</description>
 
